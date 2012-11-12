@@ -82,9 +82,15 @@ class TimeZoneField(models.Field):
         if value == pytz.UTC or isinstance(value, pytz.tzinfo.BaseTzInfo):
             return smart_unicode(value)
 
-    def value_to_string(self, value):
-        return self.get_prep_value(value)
-
+    def value_to_string(self, obj):
+        """
+        Returns a string value of this field from the passed obj.
+        This is used by the serialization framework.
+        """
+        if obj is not None:
+            return self.get_prep_value(getattr(obj, self.attname))
+        else:
+            return self.get_default()
 
 # South support
 try:
